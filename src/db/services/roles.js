@@ -37,7 +37,7 @@ async function addRole(role) {
                 console.error('Ошибка базы данных:', err.message);
                 return reject(new Error('Ошибка добавления роли'));
             }
-            console.log("Role added");
+            console.log("Role added:", role);
             resolve({
                 roleId: roleId,
             })

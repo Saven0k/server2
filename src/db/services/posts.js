@@ -1,5 +1,6 @@
 const db = require('../db');
 const generateUniqueId = require('../utils/generateUniqueId');
+const formatDate = require('../utils/formateData')
 
 
 /**
@@ -14,46 +15,33 @@ const generateUniqueId = require('../utils/generateUniqueId');
  * @throws {Error} При ошибке загрузки изображения или записи в БД
  */
 async function createPostWithImage(title, content, role, public_post, student_groups, image) {
-    console.log("creating Data with Image");
-    console.log(title);
-    console.log(content);
-
-    console.log(image);
-
-    let image_path = null;
     const userId = generateUniqueId('post');
     try {
         if (image) {
-            console.log("request has image");
-
             const ext = path.extname(image.originalname);
             const filename = `${Date.now()}${ext}`;
             image_path = path.join('uploads', filename);
-            console.log(image_path);
-            console.log(image);
-            console.log(image.buffer);
-
             await fs.promises.writeFile(path.join(__dirname, image_path), image.buffer);
         }
 
         const sql = `INSERT INTO posts (id, title, content, role, student_groups, public_post, date_created, image_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
         return new Promise((resolve, reject) => {
-            const today = new Date();
-            const formattedDate = [
-                String(today.getDate()).padStart(2, '0'),
-                String(today.getMonth() + 1).padStart(2, '0'),
-                today.getFullYear()
-            ].join('.');
+            // const today = new Date();
+            // const formattedDate = [
+            //     String(today.getDate()).padStart(2, '0'),
+            //     String(today.getMonth() + 1).padStart(2, '0'),
+            //     today.getFullYear()
+            // ].join('.');
 
-            db.run(sql, [userId, title, content, role, JSON.stringify(student_groups), public_post, formattedDate, image_path], function (err) {
+            db.run(sql, [userId, title, content, role, JSON.stringify(student_groups), public_post, formatDate(), image_path], function (err) {
                 if (err) {
                     console.error("Ошибка базы данных:", err.message);
                     return reject(new Error("Ошибка регистрации поста"));
                 }
                 resolve({
                     userId,
-                    message: "Запись успешно зарегистрирована",
+                    message: `Запись успешно зарегистрирована: ${title}`,
                 });
             });
         });
@@ -234,16 +222,16 @@ async function getAllPostsForStudentByGroup(groupToFind) {
  */
 async function updatePost(id, title, content, role, public_post, student_groups) {
     const updateSql = `UPDATE posts SET title = ?, content = ?, role = ?, student_groups = ?, public_post = ?, date_created = ? WHERE id = ?`;
-    const today = new Date();
-    const formattedDate = [
-        String(today.getDate()).padStart(2, '0'),
-        String(today.getMonth() + 1).padStart(2, '0'),
-        today.getFullYear()
-    ].join('.');
+    // const today = new Date();
+    // const formattedDate = [
+    //     String(today.getDate()).padStart(2, '0'),
+    //     String(today.getMonth() + 1).padStart(2, '0'),
+    //     today.getFullYear()
+    // ].join('.');
 
     return new Promise((resolve, reject) => {
         db.serialize(() => {
-            db.run(updateSql, [title, content, role, JSON.stringify(student_groups), public_post, formattedDate, id], function (err) {
+            db.run(updateSql, [title, content, role, JSON.stringify(student_groups), public_post, formatDate(), id], function (err) {
                 if (err) return reject(new Error("Ошибка обновления поста"));
 
                 db.get(`SELECT * FROM posts WHERE id = ?`, [id], (err, row) => {

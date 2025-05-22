@@ -61,7 +61,7 @@ async function updateUser(id, email, password, countVisit, role) {
                 console.error("Ошибка базы данных:", err.message);
                 return reject(new Error("Ошибка обновления пользователя"));
             }
-            console.log("Пользователь обновлен");
+            console.log("Пользователь обновлен:" , email, role);
             resolve("OK");
         });
     });

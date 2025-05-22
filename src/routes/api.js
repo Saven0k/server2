@@ -13,7 +13,7 @@ const visitorsRouter = require('./visitors');
 router.use('/users', userRouter);
 router.use('/posts', postsRouter);
 router.use('/roles', rolerRouter);
-router.use('/groups', groupRouter);
+router.use('/student/groups', groupRouter);
 router.use('/cities', citiesRouter);
 router.use('/visitors', visitorsRouter);
 

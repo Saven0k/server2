@@ -1,4 +1,7 @@
 const db = require('../db');
+const generateUniqueId = require('../utils/generateUniqueId');
+
+
 /**
  * Асинхронно получает список всех студенческих групп из базы данных.
  * @returns {Promise<Array>} Промис, который разрешается массивом объектов групп
@@ -25,7 +28,7 @@ async function getStudentGroups() {
  * @throws {Error} Если произошла ошибка при добавлении группы
  */
 async function addStudentGroup(groupName) {
-    const groupId = generateUniqueIdForGroup();
+    const groupId = generateUniqueId('group');
     const sql = 'INSERT INTO groups (id, name) VALUES ( ?, ? )'
     return new Promise((resolve, reject) => {
         db.run(sql, [groupId, groupName], function (err) {
