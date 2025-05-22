@@ -1,10 +1,9 @@
 {
   "name": "server2",
   "version": "1.0.0",
-  "type": "commonjs",
-  "main": "app.js",
+  "main": "../src/server.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/server.js",
     "test": "echo \"Error:no test specifield\" && exit 1"
   },
   "dependencies": {

@@ -9,6 +9,16 @@ const {
     updatePost,
     deletePost,
 } = require('../db/services/posts');
+const multer = require('multer');
+const path = require('path');
+
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+    },
+});
 
 exports.getAllPosts = async (req, res) => {
     try {
