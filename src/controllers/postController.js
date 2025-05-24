@@ -1,13 +1,11 @@
 const {
     getAllPosts,
     getPostById,
-    getPostByRole,
-    getPublicPostsByRole,
-    getPublicPostsForStudentByGroup,
-    getAllPostsForStudentByGroup,
     createPostWithImage,
     updatePost,
     deletePost,
+    getPostsByRoleByStatusByContext,
+    updatePostStatus,
 } = require('../db/services/posts');
 const multer = require('multer');
 const path = require('path');
@@ -28,6 +26,7 @@ exports.getAllPosts = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
 exports.getPostById = async (req, res) => {
     const id = req.params.id;
     try {
@@ -38,57 +37,31 @@ exports.getPostById = async (req, res) => {
     }
 };
 
-exports.getPostByRole = async (req, res) => {
-    const { role } = req.body;
+exports.getPostsByContextByRoleByStatus = async (req, res) => {
+    const { role, status, role_context } = req.body;
     try {
-        const posts = await getPostByRole(role);
+        const posts = await getPostsByRoleByStatusByContext(role, status, role_context);
+        if (posts.length !== 0) {
+            console.log("Вернули записи для роль/контекс/статус", role, role_context, status)
+        }
+
         res.json({ posts });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-exports.getPublicPostsByRole = async (req, res) => {
-    const { forField } = req.body;
+const createPostWithImageHandler = async (req, res) => {
     try {
-        const posts = await getPublicPostsByRole(forField);
-        res.json({ posts });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-exports.getPublicPostsForStudentByGroup = async (req, res) => {
-    const { group } = req.body;
-    try {
-        const posts = await getPublicPostsForStudentByGroup(group);
-        res.json({ posts });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-exports.getAllPostsForStudentByGroup = async (req, res) => {
-    const { group } = req.body;
-    try {
-        const posts = await getAllPostsForStudentByGroup(group);
-        res.json({ posts });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-exports.createPostWithImage = upload.single('image'), async (req, res) => {
-    try {
-        const { title, content, typeVisible, group, publicPost } = req.body;
-        const imagePath = req.file;
+        const { title, content, role, role_context, status } = req.body;
+        const image = req.file;
         const post = await createPostWithImage(
             title,
             content,
-            typeVisible,
-            group,
-            publicPost,
-            imagePath
+            role,
+            status,
+            role_context,
+            image
         );
         res.status(201).json(post);
     } catch (error) {
@@ -96,11 +69,21 @@ exports.createPostWithImage = upload.single('image'), async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+exports.createPostWithImage = [upload.single('file'), createPostWithImageHandler]
 
 exports.updatePost = async (req, res) => {
-    const { id, name, text, forField, visible, group } = req.body;
+    const { id, title, content, role, status, role_context } = req.body;
     try {
-        const updatedPost = await updatePost(id, name, text, forField, visible, group);
+        const updatedPost = await updatePost(id, title, content, role, status, role_context);
+        res.json({ message: "Пост обновлен", post: updatedPost });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+exports.updateStatusPost = async (req, res) => {
+    const { id, status } = req.body;
+    try {
+        const updatedPost = await updatePostStatus(id, status);
         res.json({ message: "Пост обновлен", post: updatedPost });
     } catch (error) {
         res.status(500).json({ message: error.message });

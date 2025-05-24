@@ -4,13 +4,11 @@ const router = express.Router();
 const postController = require('../controllers/postController')
 
 router.get('/', postController.getAllPosts);
+router.post('/new', postController.createPostWithImage);
 router.get('/:id', postController.getPostById);
-router.post('/public/role', postController.getPublicPostsByRole);
-router.post('/role', postController.getPostByRole);
-router.post('/public/group', postController.getPublicPostsForStudentByGroup);
-router.post('/group', postController.getAllPostsForStudentByGroup);
-router.post('/addWithImage', postController.createPostWithImage);
+router.post('/status/context', postController.getPostsByContextByRoleByStatus);
 router.put('/update/:id', postController.updatePost);
+router.patch('/update/status', postController.updateStatusPost);
 router.delete('/delete/:id', postController.deletePost);
 
 

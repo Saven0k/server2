@@ -33,8 +33,8 @@ const db = new sqlite3.Database(dbPath, (err) => {
 			title TEXT,
 			content TEXT,
 			role TEXT,
-			student_groups TEXT,
-			public_post TEXT,
+			role_context TEXT,
+			status TEXT,
 			date_created DATE,
 			image_path TEXT
 		)`,
